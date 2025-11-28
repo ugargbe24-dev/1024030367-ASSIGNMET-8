@@ -1,0 +1,176 @@
+#include <iostream>
+using namespace std;
+
+// ----------------------
+// Node structure for BST
+// ----------------------
+struct Node {
+    int data;
+    Node* left;
+    Node* right;
+
+    Node(int value) {
+        data = value;
+        left = right = nullptr;
+    }
+};
+
+// ----------------------
+// Insert into BST
+// ----------------------
+Node* insert(Node* root, int key) {
+    if (root == nullptr)
+        return new Node(key);
+
+    if (key < root->data)
+        root->left = insert(root->left, key);
+    else
+        root->right = insert(root->right, key);
+
+    return root;
+}
+
+
+// =========================================
+// a) SEARCH (RECURSIVE)
+// =========================================
+Node* searchRecursive(Node* root, int key) {
+    if (root == nullptr || root->data == key)
+        return root;
+
+    if (key < root->data)
+        return searchRecursive(root->left, key);
+    else
+        return searchRecursive(root->right, key);
+}
+
+
+// =========================================
+// a) SEARCH (NON-RECURSIVE)
+// =========================================
+Node* searchNonRecursive(Node* root, int key) {
+    while (root != nullptr) {
+        if (key == root->data)
+            return root;
+        else if (key < root->data)
+            root = root->left;
+        else
+            root = root->right;
+    }
+    return nullptr;
+}
+
+
+// =========================================
+// b) MINIMUM ELEMENT IN BST
+// =========================================
+Node* findMin(Node* root) {
+    if (root == nullptr)
+        return nullptr;
+
+    while (root->left != nullptr)
+        root = root->left;
+
+    return root;
+}
+
+
+// =========================================
+// c) MAXIMUM ELEMENT IN BST
+// =========================================
+Node* findMax(Node* root) {
+    if (root == nullptr)
+        return nullptr;
+
+    while (root->right != nullptr)
+        root = root->right;
+
+    return root;
+}
+
+
+// =========================================
+// d) INORDER SUCCESSOR (Next larger key)
+// =========================================
+Node* inorderSuccessor(Node* root, int key) {
+    Node* current = searchRecursive(root, key);
+    if (current == nullptr)
+        return nullptr;
+
+    // Case 1: Node has right subtree → successor is min of right subtree
+    if (current->right != nullptr)
+        return findMin(current->right);
+
+    // Case 2: No right subtree → move up to parent
+    Node* successor = nullptr;
+    Node* ancestor = root;
+    while (ancestor != current) {
+        if (key < ancestor->data) {
+            successor = ancestor;
+            ancestor = ancestor->left;
+        } else {
+            ancestor = ancestor->right;
+        }
+    }
+    return successor;
+}
+
+
+// =========================================
+// e) INORDER PREDECESSOR (Next smaller key)
+// =========================================
+Node* inorderPredecessor(Node* root, int key) {
+    Node* current = searchRecursive(root, key);
+    if (current == nullptr)
+        return nullptr;
+
+    // Case 1: Has left subtree → predecessor is max of left subtree
+    if (current->left != nullptr)
+        return findMax(current->left);
+
+    // Case 2: No left subtree → move up
+    Node* predecessor = nullptr;
+    Node* ancestor = root;
+    while (ancestor != current) {
+        if (key > ancestor->data) {
+            predecessor = ancestor;
+            ancestor = ancestor->right;
+        } else {
+            ancestor = ancestor->left;
+        }
+    }
+    return predecessor;
+}
+
+
+// ----------------------------------------
+// Main Function (Example Usage)
+// ----------------------------------------
+int main() {
+    Node* root = nullptr;
+
+    // Create BST
+    int keys[] = { 20, 10, 5, 15, 30, 25, 35 };
+    for (int k : keys)
+        root = insert(root, k);
+
+    // Demonstration
+    cout << "Recursive Search for 15: ";
+    cout << (searchRecursive(root, 15) ? "Found" : "Not Found") << endl;
+
+    cout << "Non-Recursive Search for 25: ";
+    cout << (searchNonRecursive(root, 25) ? "Found" : "Not Found") << endl;
+
+    cout << "Minimum element: " << findMin(root)->data << endl;
+    cout << "Maximum element: " << findMax(root)->data << endl;
+
+    Node* succ = inorderSuccessor(root, 20);
+    if (succ) cout << "Inorder Successor of 20: " << succ->data << endl;
+    else cout << "No successor\n";
+
+    Node* pred = inorderPredecessor(root, 20);
+    if (pred) cout << "Inorder Predecessor of 20: " << pred->data << endl;
+    else cout << "No predecessor\n";
+
+    return 0;
+}
