@@ -1,0 +1,65 @@
+#include <iostream>
+#include <climits>
+using namespace std;
+
+// -----------------------------
+// Node structure for the tree
+// -----------------------------
+struct Node {
+    int data;
+    Node* left;
+    Node* right;
+
+    Node(int value) {
+        data = value;
+        left = right = nullptr;
+    }
+};
+
+// --------------------------------------
+// Utility function to check BST
+// --------------------------------------
+bool isBSTUtil(Node* root, long long minVal, long long maxVal) {
+    if (root == nullptr)
+        return true;
+
+    // Node must be within allowed range
+    if (root->data <= minVal || root->data >= maxVal)
+        return false;
+
+    // Recur for left subtree and right subtree
+    return isBSTUtil(root->left, minVal, root->data) &&
+           isBSTUtil(root->right, root->data, maxVal);
+}
+
+// --------------------------------------
+// Main function to check if Tree is BST
+// --------------------------------------
+bool isBST(Node* root) {
+    return isBSTUtil(root, LLONG_MIN, LLONG_MAX);
+}
+
+// --------------------------------------
+// Example usage
+// --------------------------------------
+int main() {
+    /* Example tree:
+             10
+            /  \
+           5   20
+              /  \
+             15  30
+    */
+    Node* root = new Node(10);
+    root->left = new Node(5);
+    root->right = new Node(20);
+    root->right->left = new Node(15);
+    root->right->right = new Node(30);
+
+    if (isBST(root))
+        cout << "The given tree IS a BST\n";
+    else
+        cout << "The given tree is NOT a BST\n";
+
+    return 0;
+}
